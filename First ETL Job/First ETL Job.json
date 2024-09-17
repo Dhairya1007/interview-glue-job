@@ -1,0 +1,44 @@
+{
+  "name" : "First ETL Job",
+  "jobMode" : "VISUAL",
+  "description" : "",
+  "role" : "arn:aws:iam::440187254510:role/interview-test-role",
+  "executionProperty" : {
+    "maxConcurrentRuns" : 1
+  },
+  "command" : {
+    "name" : "glueetl",
+    "scriptLocation" : "s3://aws-glue-assets-440187254510-us-east-1/scripts/First ETL Job.py",
+    "pythonVersion" : "3"
+  },
+  "defaultArguments" : {
+    "--enable-metrics" : "true",
+    "--enable-spark-ui" : "true",
+    "--spark-event-logs-path" : "s3://aws-glue-assets-440187254510-us-east-1/sparkHistoryLogs/",
+    "--enable-job-insights" : "false",
+    "--enable-observability-metrics" : "true",
+    "--enable-glue-datacatalog" : "true",
+    "--enable-continuous-cloudwatch-log" : "true",
+    "--job-bookmark-option" : "job-bookmark-disable",
+    "--job-language" : "python",
+    "--TempDir" : "s3://aws-glue-assets-440187254510-us-east-1/temporary/"
+  },
+  "connections" : {
+    "connections" : [ "Redshift connection" ]
+  },
+  "maxRetries" : 0,
+  "allocatedCapacity" : 5,
+  "timeout" : 2880,
+  "maxCapacity" : 5.0,
+  "glueVersion" : "4.0",
+  "numberOfWorkers" : 5,
+  "workerType" : "G.1X",
+  "executionClass" : "STANDARD",
+  "codeGenConfigurationNodes" : "{\"node-1726535161758\":{\"SelectFromCollection\":{\"Index\":0,\"Inputs\":[\"node-1726531220892\"],\"Name\":\"originalData\"}},\"node-1726531220892\":{\"EvaluateDataQualityMultiFrame\":{\"AdditionalDataSources\":{},\"AdditionalOptions\":{\"observations.scope\":\"ALL\",\"performanceTuning.caching\":\"CACHE_NOTHING\"},\"Inputs\":[\"node-1726530907421\"],\"Name\":\"Evaluate Data Quality\",\"PublishingOptions\":{\"CloudWatchMetricsEnabled\":true,\"ResultsPublishingEnabled\":true,\"ResultsS3Prefix\":\"\"},\"Ruleset\":\"# Example rules: Completeness \\\"colA\\\" between 0.4 and 0.8, ColumnCount > 10\\nRules = [\\n    ColumnDataType \\\"ForcastedMonthlyRevenue\\\" = \\\"Integer\\\",\\n    ColumnDataType \\\"WeightedRevenue\\\" = \\\"Integer\\\",\\n    Completeness \\\"ForcastedMonthlyRevenue\\\" > 0.95,\\n    Completeness \\\"WeightedRevenue\\\" > 0.95\\n]\",\"StopJobOnFailureOptions\":{\"StopJobOnFailureTiming\":\"AfterDataLoad\"}}},\"node-1726530424231\":{\"S3CsvSource\":{\"AdditionalOptions\":{\"EnableSamplePath\":false,\"SamplePath\":\"s3://interview-task-test-bucket/SalesData.csv\"},\"Escaper\":\"\",\"Exclusions\":[],\"Name\":\"Amazon S3\",\"OptimizePerformance\":false,\"OutputSchemas\":[{\"Columns\":[{\"Name\":\"date\",\"Type\":\"string\"},{\"Name\":\"salesperson\",\"Type\":\"string\"},{\"Name\":\"lead name\",\"Type\":\"string\"},{\"Name\":\"segment\",\"Type\":\"string\"},{\"Name\":\"region\",\"Type\":\"string\"},{\"Name\":\"target close\",\"Type\":\"string\"},{\"Name\":\"forecasted monthly revenue\",\"Type\":\"string\"},{\"Name\":\"opportunity stage\",\"Type\":\"string\"},{\"Name\":\"weighted revenue\",\"Type\":\"string\"},{\"Name\":\"closed opportunity\",\"Type\":\"string\"},{\"Name\":\"active opportunity\",\"Type\":\"string\"},{\"Name\":\"latest status entry\",\"Type\":\"string\"}]}],\"Paths\":[\"s3://interview-task-test-bucket/SalesData.csv\"],\"QuoteChar\":\"quote\",\"Recurse\":true,\"Separator\":\"comma\",\"WithHeader\":true}},\"node-1726530907421\":{\"SparkSQL\":{\"Inputs\":[\"node-1726530621574\"],\"Name\":\"SQL Query\",\"OutputSchemas\":[{\"Columns\":[{\"Name\":\"TransactionDate\",\"Type\":\"string\"},{\"Name\":\"FirstName\",\"Type\":\"string\"},{\"Name\":\"LastName\",\"Type\":\"string\"},{\"Name\":\"ForcastedMonthlyRevenue\",\"Type\":\"int\"},{\"Name\":\"WeightedRevenue\",\"Type\":\"int\"}]}],\"SqlAliases\":[{\"Alias\":\"myDataSource\",\"From\":\"node-1726530621574\"}],\"SqlQuery\":\"select \\n`date` as TransactionDate,\\nSUBSTRING_INDEX(Salesperson, '_', 1) as FirstName, \\nSUBSTRING_INDEX(Salesperson, '_', -1) as LastName,\\ncast(`Forecasted Monthly Revenue` as int) as ForcastedMonthlyRevenue,\\ncast(`Weighted Revenue` as int) as WeightedRevenue\\nfrom myDataSource\"}},\"node-1726534877468\":{\"AmazonRedshiftTarget\":{\"Data\":{\"AccessType\":\"connection\",\"Action\":\"append\",\"AdvancedOptions\":[],\"Connection\":{\"Description\":\"-\",\"Label\":\"Redshift connection\",\"Value\":\"Redshift connection\"},\"MergeAction\":\"simple\",\"MergeWhenMatched\":\"update\",\"MergeWhenNotMatched\":\"insert\",\"Schema\":{\"Label\":\"public\",\"Value\":\"public\"},\"SelectedColumns\":[],\"SourceType\":\"table\",\"StagingTable\":\"public.finalsalesdata_temp_246lfm\",\"Table\":{\"Description\":\"public\",\"Label\":\"finalsalesdata\",\"Value\":\"finalsalesdata\"},\"TableSchema\":[{\"Description\":\"VARCHAR\",\"Label\":\"Rule\",\"Value\":\"Rule\"},{\"Description\":\"VARCHAR\",\"Label\":\"Outcome\",\"Value\":\"Outcome\"},{\"Description\":\"VARCHAR\",\"Label\":\"FailureReason\",\"Value\":\"FailureReason\"},{\"Description\":\"VARCHAR\",\"Label\":\"EvaluatedMetrics\",\"Value\":\"EvaluatedMetrics\"},{\"Description\":\"VARCHAR\",\"Label\":\"EvaluatedRule\",\"Value\":\"EvaluatedRule\"}],\"TempDir\":\"s3://aws-glue-assets-440187254510-us-east-1/temporary/\",\"Upsert\":false},\"Inputs\":[\"node-1726535161758\"],\"Name\":\"Amazon Redshift\"}},\"node-1726530621574\":{\"SelectFields\":{\"Inputs\":[\"node-1726530424231\"],\"Name\":\"Select Fields\",\"Paths\":[[\"Date\"],[\"Salesperson\"],[\"Forecasted Monthly Revenue\"],[\"Weighted Revenue\"]]}}}",
+  "sourceControlDetails" : {
+    "provider" : "GITHUB",
+    "repository" : "interview-glue-job",
+    "branch" : "master",
+    "folder" : "First ETL Job"
+  }
+}
